@@ -129,6 +129,130 @@ secrets:
     for exmaple `"prompt-flow-endpoint" : "http://localhost:8083/score"` for local run of PF
 11. Set `"vector-api-endpoint"` in the same file to the URL of your vector database API
 
+### Vector API Requests
+
+The add-in communicates with the backend configured by `vector-api-endpoint` using JSON
+payloads. Each request contains a `query_type` field, and the backend must return a JSON
+object with an `answer` property. Below are examples of the requests sent by the
+plugin and the fields that are expected in the responses.
+
+#### Ask a question (`query_type: 3`)
+
+Request
+
+```json
+{
+  "query_type": 3,
+  "question": "Can we terminate the agreement early?",
+  "language": "en",
+  "groups": ["<groupId>", "..."]
+}
+```
+
+Response
+
+```json
+{
+  "answer": {
+    "Answer": "Yes. The contract allows early termination with 30 days notice.",
+    "SearchResults": [
+      {
+        "title": "Termination clause",
+        "summary": "Clause 12 covers early termination...",
+        "keyphrases": ["early termination", "notice period"]
+      }
+    ]
+  }
+}
+```
+
+#### Review selected text (`query_type: 2`)
+
+Request
+
+```json
+{
+  "query_type": 2,
+  "question": "<selected text from Word>",
+  "language": "en",
+  "group": ["<groupId>", "..."]
+}
+```
+
+Response
+
+```json
+{
+  "answer": {
+    "PolicyItems": [
+      {
+        "title": "Non\u2011compete policy",
+        "summary": "Contract language conflicts with policy...",
+        "relevant_policy_item": "1.2",
+        "suggested_correction": "Replace with ...",
+        "key_phrases": ["non-compete"],
+        "iscompliant": false
+      }
+    ],
+    "warning": ""
+  }
+}
+```
+
+#### Summarize entire document (`query_type: 1`)
+
+Request
+
+```json
+{ "query_type": 1, "filename": "mydoc.docx" }
+```
+
+Response
+
+```json
+{
+  "answer": [
+    {
+      "title": "Section 1",
+      "summary": "Overview of the agreement...",
+      "isCompliant": true,
+      "CompliantCollection": ["NDA Policy"],
+      "NonCompliantCollection": [],
+      "keyphrases": ["overview"]
+    }
+  ]
+}
+```
+
+#### Check document index (`query_type: 99`)
+
+Request
+
+```json
+{
+  "query_type": 99,
+  "filename": "mydoc.docx",
+  "groups": ["<groupId>"]
+}
+```
+
+Response
+
+```json
+{ "answer": { "Found": true } }
+```
+
+The add-in reads `answer.Found` to determine whether the document is already indexed.
+If `Found` is `false`, users are prompted to upload the document.
+
+### Microsoft Graph Calls
+
+When single sign-on is enabled, the add-in also retrieves the user's profile
+and group memberships using Microsoft Graph (`/v1.0/me` and
+`/v1.0/me/memberOf`). The group IDs returned from Graph are sent in the
+`groups` field of the requests above so the backend can filter results
+based on the user's permissions.
+
 
 **Office 365 Deployment:**  
   
