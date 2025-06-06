@@ -63,7 +63,7 @@ To install and run the plugin locally, ensure you have the following:
 - Python  
 - Visual Studio Code  
 - Azure OpenAI with GPT-4o model and Ada-002 for embedding  
-- Azure AI Search (Basic tier)  
+- A vector database accessible via `/query` and `/insert` HTTP endpoints
 
 > [!NOTE]  
 > Use Azure OpenAi GPT4o with the `2024-08-06` model version
