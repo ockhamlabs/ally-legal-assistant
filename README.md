@@ -253,6 +253,32 @@ and group memberships using Microsoft Graph (`/v1.0/me` and
 `groups` field of the requests above so the backend can filter results
 based on the user's permissions.
 
+### PromptFlow Orchestration
+
+The backend logic is organized as [PromptFlow](https://learn.microsoft.com/azure/ai-studio/prompt-flow/overview) flows.
+Each flow invokes a series of Python tools defined under `backend/PromptFlow`:
+
+- **Ask a question** (`query_type: 3`) – computes an embedding for the question, searches
+  the `legal-documents` index through `/query`, and formats an answer with the LLM.
+- **Review selected text** (`query_type: 2`) – embeds the selection, searches the
+  `legal-instructions` index, and uses the LLM to compare the text with the matching policies.
+- **Summarize entire document** (`query_type: 1`) – retrieves all entries for the
+  document from `legal-documents` and assembles a compliance report.
+- **Check document index** (`query_type: 99`) – searches `legal-documents` by filename to
+  determine if the document is already indexed.
+
+A separate *doc‑embedding* flow chunks new documents, generates embeddings, and inserts
+them into the vector database. These flows call a `VectorDBClient` that expects two HTTP
+endpoints:
+
+* `POST /query` – body fields `text`, `vector`, `top_k`, `index`, and optional `filters`.
+  Returns `{ "results": [...], "count": <number> }`.
+* `POST /insert` – body fields `index` and `documents` (an array of objects). Inserts the
+  supplied documents and returns a status object.
+
+Implementing these endpoints with a different vector database will let the add-in maintain
+the same functionality while running outside Azure.
+
 
 **Office 365 Deployment:**  
   
