@@ -1,32 +1,17 @@
 from promptflow.core import tool
 from promptflow.connections import CustomConnection
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-from azure.search.documents.models import VectorizedQuery
+from backend.vector_db_client import VectorDBClient
 
 @tool
 def list_policy_tool(query: str, embeding:list, searchconnection: CustomConnection, groups: list) -> object:
-    search_endpoint = searchconnection.search_endpoint
-    search_index = searchconnection.search_policy_index
-    search_key = searchconnection.search_key    
-    
-    vector_query = VectorizedQuery(king="vector", vector=embeding, k_nearest_neighbors=1, fields="embeding")     
-
-    search_client = SearchClient(search_endpoint, search_index, AzureKeyCredential(search_key))
-    #print the param groups type
+    client = VectorDBClient()
     print(type(groups))
-    #convert list to string
     groupssplit = ','.join(groups)
-        
-    group_filter = "adgroup/any(t: search.in(t, '{}'))".format(groupssplit)
-    results = search_client.search(
-        search_text=query,  # Use '*' to match all documents
-        filter=group_filter, 
-        vector_queries=[vector_query],
-        select="title,instruction"     # Specify the fields to include in the results
-    )
+    filter_data = {"groups": groupssplit}
+    response = client.query(query, vector=embeding, top_k=1, filters=filter_data, index="legal-instructions")
     policy_list = []
-    for result in results:
-        policy_list.append({"title": result["title"], "instruction": result["instruction"]})
+    for result in response.get("results", []):
+        policy_list.append({"title": result.get("title"), "instruction": result.get("instruction")})
         
     return policy_list
+

@@ -15,8 +15,7 @@ fetch("assets/config.json")
   .then((text) => {
     console.log("Config: ", text);
     const config = JSON.parse(text);
-    localStorage.setItem('pfendpoint', config['prompt-flow-endpoint']);
-    localStorage.setItem('pfconfigendpoint', config['prompt-flow-config-endpoint']);
+    localStorage.setItem('vector-endpoint', config['vector-api-endpoint']);
     localStorage.setItem('clientId', config['clientId']);
     localStorage.setItem('authority', config['authority']);
     localStorage.setItem('sso-enabled', config['sso-enabled']);
@@ -42,7 +41,7 @@ Office.onReady(async (info) => {
     });
   }
 
-    getOpenAIResponseDemo(localStorage.getItem('pfendpoint')).then((result) =>
+    getOpenAIResponseDemo(localStorage.getItem('vector-endpoint')).then((result) =>
     {
       // write the name of the user based on the profile from SSO
       const name = localStorage.getItem("profile") ? JSON.parse(localStorage.getItem("profile")).displayName : "User";
@@ -273,7 +272,7 @@ async function checkdocumentindex()
   // check if the document has been indexed
   console.log("check index")
   console.log(localStorage.getItem('filename'));
-  const response = await fetchData(localStorage.getItem('pfendpoint'), localStorage.getItem('filename'), localStorage.getItem('groups'));       
+  const response = await fetchData(localStorage.getItem('vector-endpoint'), localStorage.getItem('filename'), localStorage.getItem('groups'));
   const data = await response.json(); 
   console.log(data.answer.Found);
   

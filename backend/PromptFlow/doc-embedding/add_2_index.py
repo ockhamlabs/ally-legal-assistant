@@ -1,8 +1,7 @@
 
 from promptflow.core import tool
 from promptflow.connections import CustomConnection, AzureOpenAIConnection
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
+from backend.vector_db_client import VectorDBClient
 from openai import AzureOpenAI
 import datetime
 
@@ -15,21 +14,17 @@ def my_python_tool(filename: str, input: list, searchconnection: CustomConnectio
     search_index = "legal-documents"
     search_key = searchconnection.key
 
-    # Create a client
-    credential = AzureKeyCredential(search_key)
-    client = SearchClient(endpoint=search_endpoint,
-                        index_name=search_index,
-                        credential=credential)
+    client = VectorDBClient()
 
-    client = AzureOpenAI(  
-        azure_endpoint=openai.api_base,  
-        api_key=openai.api_key,  
+    openai_client = AzureOpenAI(
+        azure_endpoint=openai.api_base,
+        api_key=openai.api_key,
         api_version="2024-08-01-preview"
     )
 
     def text_embeding(text):
         import json
-        response  = client.embeddings.create(
+        response  = openai_client.embeddings.create(
                 input = text,
                 model= "ada002"        
         )
@@ -45,7 +40,7 @@ def my_python_tool(filename: str, input: list, searchconnection: CustomConnectio
         # now in 2024-04-14T06:35:05Z format 
         item['data'] = datetime.datetime.now().isoformat()
     
-    # result = client.upload_documents(documents=
-    #                              [input['chunk']],)
+    client.insert(input['chunk'], index=search_index)
 
     return input['chunk']
+

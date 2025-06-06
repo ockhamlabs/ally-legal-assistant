@@ -2,8 +2,7 @@ from promptflow.core import tool
 from promptflow.connections import AzureOpenAIConnection, CustomConnection
 from pydantic import BaseModel 
 from openai import AzureOpenAI
-from azure.search.documents import SearchClient
-from azure.core.credentials import AzureKeyCredential
+from backend.vector_db_client import VectorDBClient
 from typing import List  
 import json
 import time
@@ -24,16 +23,8 @@ class SummaryResponse(BaseModel):
 @tool
 def python_tool(input_text: str, ally:CustomConnection) -> object:
     
-    search_endpoint = ally.search_endpoint
-    search_index = ally.search_document_index
-    search_key = ally.search_key
-    # use ai azure search to query 
-
-    search_client = SearchClient(search_endpoint, search_index, AzureKeyCredential(search_key))
-    results = search_client.search(
-        search_text="*",  # Use '*' to match all documents
-        order_by=["ParagraphId"],
-    )
+    client = VectorDBClient()
+    results = client.query("*", index="legal-documents", top_k=1000).get("results", [])
     list = []
     for result in results:
         #title,paragraph,keyphrases,summary,isCompliant,CompliantCollection,NonCompliantCollection
@@ -51,17 +42,14 @@ def python_tool(input_text: str, ally:CustomConnection) -> object:
     return list
 
 
-def get_policyinfo(policyid:int ,ally:CustomConnection):
-    search_endpoint = ally.search_endpoint
-    search_index = ally.search_policy_index
-    search_key = ally.search_key
-    # use ai azure search to query 
-
-    search_client = SearchClient(search_endpoint, search_index, AzureKeyCredential(search_key))
-    results = search_client.search(
-        filter=f"PolicyId eq {policyid}",
-        select="id,title,instruction,tags,severity"
+def get_policyinfo(policyid: int, ally: CustomConnection):
+    client = VectorDBClient()
+    response = client.query(
+        "*",
+        filters={"PolicyId": policyid},
+        index="legal-instructions",
+        top_k=1,
     )
-    results_list = [result for result in results]
+    results_list = response.get("results", [])
     return results_list[0] if results_list else None
      

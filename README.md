@@ -127,12 +127,14 @@ secrets:
 9. This will load a local web on port `8083` and can be used by the Plugin
 10. ***/cofig/cofig.json*** file need to hold the endpoint of the PromptFlow endpoint under the `prompt-flow-endpoint`
     for exmaple `"prompt-flow-endpoint" : "http://localhost:8083/score"` for local run of PF
+11. Set `"vector-api-endpoint"` in the same file to the URL of your vector database API
 
 
 **Office 365 Deployment:**  
   
 - under Development there is no need to do any changes under Office, as this repo will create and aloocate the plugin localy on this muchine
 - in production there are steps to create an Add on in the Addon list and provide the URL for the location of the deployment under Azure WebApp
+ - before packaging, run `python update_manifest.py` to replace `{{SUPPORT_URL}}` and `{{APP_DOMAIN}}` with your deployment values
 
 [Deploy and publish Office Add-ins](https://learn.microsoft.com/en-us/office/dev/add-ins/publish/publish)
   
