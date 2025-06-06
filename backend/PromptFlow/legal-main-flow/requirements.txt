@@ -1,5 +1,0 @@
-promptflow
-openai
-typing
-requests
-promptflow-tools
