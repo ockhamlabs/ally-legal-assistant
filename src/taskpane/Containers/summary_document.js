@@ -2,7 +2,7 @@ export async function document_summary() {
     // Clear the container content before adding new results
     const container = document.getElementById("summary-container");
     const container_bk = container.innerHTML;
-    const pfendpoint = localStorage.getItem('pfendpoint')      
+    const pfendpoint = localStorage.getItem('vector-endpoint')
       
     if (container) {
       container.innerHTML = "";  // Clear existing content

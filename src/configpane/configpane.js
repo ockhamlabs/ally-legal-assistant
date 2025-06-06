@@ -4,17 +4,9 @@ fetch("assets/config.json")
   .then((text) => {
     console.log("Config: ", text);
     const config = JSON.parse(text);
-    localStorage.setItem('azureOpenAIEndpoint', config['azure-openai-endpoint']);
-    localStorage.setItem('azureOpenAIKey', config['azure-openai-key']);
-    localStorage.setItem('azureOpenAIModelName', config['azure-openai-model']);
-    localStorage.setItem('azureOpenAIModelVersion', config['azure-openai-api-version']);
-    console.log(localStorage.getItem('azureOpenAIKey'));
+    localStorage.setItem('vectorApiEndpoint', config['vector-api-endpoint']);
 
-    // upadte the text fields
-    document.getElementById('azure-openai-endpoint').value = localStorage.getItem('azureOpenAIEndpoint');
-    document.getElementById('azure-openai-key').value = localStorage.getItem('azureOpenAIKey');
-    document.getElementById('azure-openai-model-name').value = localStorage.getItem('azureOpenAIModelName');
-    document.getElementById('azure-openai-api-version').value = localStorage.getItem('azureOpenAIModelVersion');
+    document.getElementById('vector-api-endpoint').value = localStorage.getItem('vectorApiEndpoint');
    })
   .catch((e) => console.error(e));
 
@@ -31,21 +23,11 @@ Office.onReady((info) => {
 export async function configbutton() {
   return Word.run(async (context) => {
 
-    const azureOpenAIKey = document.getElementById('azure-openai-key').value;
-    const azureOpenAIEndpoint = document.getElementById('azure-openai-endpoint').value;
-    const azureOpenAIModelName = document.getElementById('azure-openai-model-name').value;
-    const azureOpenAIAPIVersion = document.getElementById('azure-openai-api-version').value;
+    const vectorApiEndpoint = document.getElementById('vector-api-endpoint').value;
 
-    // Save the configuration to be used in a JS file
-    localStorage.setItem('azureOpenAIKey', azureOpenAIKey);
-    localStorage.setItem('azureOpenAIEndpoint', azureOpenAIEndpoint);
-    localStorage.setItem('azureOpenAIModelName', azureOpenAIModelName);
-    localStorage.setItem('azureOpenAIAPIVersion', azureOpenAIAPIVersion);
-  
-    console.log(azureOpenAIKey)
-    console.log(azureOpenAIEndpoint)
-    console.log(azureOpenAIModelName)
-    console.log(azureOpenAIAPIVersion)
+    localStorage.setItem('vectorApiEndpoint', vectorApiEndpoint);
+
+    console.log(vectorApiEndpoint)
 
     showSuccessSaveMessage();
     
@@ -232,4 +214,5 @@ addPolicyButton.addEventListener("click", () => {
   }}
 )
 }
+
 

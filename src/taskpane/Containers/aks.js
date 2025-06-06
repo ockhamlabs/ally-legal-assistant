@@ -3,7 +3,7 @@ import { constrainedMemory } from "process";
 // Function to ask a question and display search results  
 export async function ask() {  
   const container = document.getElementById("ask-container");  
-  const pfendpoint = localStorage.getItem('pfendpoint');
+  const pfendpoint = localStorage.getItem('vector-endpoint');
   const language = localStorage.getItem('language');
 
   console.log("Entered ask function with the next parameters: ");

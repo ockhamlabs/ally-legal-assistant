@@ -8,9 +8,9 @@
   <Description DefaultValue="A template to get started."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://gbballytest2.azurewebsites.net/help"/>
+  <SupportUrl DefaultValue="{{SUPPORT_URL}}"/>
   <AppDomains>
-    <AppDomain>https://gbballytest2.azurewebsites.net</AppDomain>
+    <AppDomain>{{APP_DOMAIN}}</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>

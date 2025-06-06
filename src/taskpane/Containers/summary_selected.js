@@ -5,7 +5,7 @@ var selectedOoxml = "";
 export async function summary() {  
   // Clear the container content before adding new results  
   const container = document.getElementById("policy-container");  
-  const pfendpoint = localStorage.getItem('pfendpoint');  
+  const pfendpoint = localStorage.getItem('vector-endpoint');
   const language = localStorage.getItem('language');
   
   console.log("Summary function called with next parms: ", pfendpoint, language);
